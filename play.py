@@ -10,6 +10,10 @@ from story import grammars
 from story.story_manager import *
 from story.utils import *
 
+def deleteContent(pfile):
+    pfile.seek(0)
+    pfile.truncate()
+    
 sys.stdout = open("/content/AIDungeon/ailog.txt", "w")
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
@@ -180,6 +184,7 @@ def play_aidungeon_2(args):
 
     with open("opening.txt", "r", encoding="utf-8") as file:
         starter = file.read()
+    deleteContent(sys.stdout)
     print(starter)
 
     while True:
@@ -209,12 +214,13 @@ def play_aidungeon_2(args):
                     )
 
                 console_print(instructions())
-                print("\nGenerating story...")
+                #print("\nGenerating story...")
 
                 result = story_manager.start_new_story(
                     prompt, context=context, upload_story=upload_story
                 )
                 print("\n")
+                deleteContent(sys.stdout)
                 console_print(result)
 
             else:
@@ -222,7 +228,8 @@ def play_aidungeon_2(args):
                 result = story_manager.load_new_story(
                     load_ID, upload_story=upload_story
                 )
-                print("\nLoading Game...\n")
+                #print("\nLoading Game...\n")
+                deleteContent(sys.stdout)
                 console_print(result)
 
         while True:
@@ -239,6 +246,7 @@ def play_aidungeon_2(args):
                 elif command == "restart":
                     story_manager.story.actions = []
                     story_manager.story.results = []
+                    deleteContent(sys.stdout)
                     console_print("Game restarted.")
                     console_print(story_manager.story.story_start)
                     continue
@@ -250,43 +258,54 @@ def play_aidungeon_2(args):
                 elif command == "nosaving":
                     upload_story = False
                     story_manager.story.upload_story = False
+                    deleteContent(sys.stdout)
                     console_print("Saving turned off.")
 
                 elif command == "help":
+                    deleteContent(sys.stdout)
                     console_print(instructions())
 
                 elif command == "censor":
                     if len(args) == 0:
                         if generator.censor:
+                            deleteContent(sys.stdout)
                             console_print("Censor is enabled.")
                         else:
+                            deleteContent(sys.stdout)
                             console_print("Censor is disabled.")
                     elif args[0] == "off":
                         if not generator.censor:
+                            deleteContent(sys.stdout)
                             console_print("Censor is already disabled.")
                         else:
                             generator.censor = False
+                            deleteContent(sys.stdout)
                             console_print("Censor is now disabled.")
 
                     elif args[0] == "on":
                         if generator.censor:
+                            deleteContent(sys.stdout)
                             console_print("Censor is already enabled.")
                         else:
                             generator.censor = True
+                            deleteContent(sys.stdout)
                             console_print("Censor is now enabled.")
 
                     else:
+                        deleteContent(sys.stdout)
                         console_print("Invalid argument: {}".format(args[0]))
 
                 elif command == "save":
                     if upload_story:
                         id = story_manager.story.save_to_storage()
+                        deleteContent(sys.stdout)
                         console_print("Game saved.")
                         console_print(
                             "To load the game, type 'load' and enter the "
                             "following ID: {}".format(id)
                         )
                     else:
+                        deleteContent(sys.stdout)
                         console_print("Saving has been turned off. Cannot save.")
 
                 elif command == "load":
@@ -295,34 +314,43 @@ def play_aidungeon_2(args):
                     else:
                         load_ID = args[0]
                     result = story_manager.story.load_from_storage(load_ID)
+                    deleteContent(sys.stdout)
                     console_print("\nLoading Game...\n")
                     console_print(result)
 
                 elif command == "print":
+                    deleteContent(sys.stdout)
                     print("\nPRINTING\n")
                     print(str(story_manager.story))
 
                 elif command == "revert":
                     if len(story_manager.story.actions) == 0:
+                        deleteContent(sys.stdout)
                         console_print("You can't go back any farther. ")
                         continue
 
                     story_manager.story.actions = story_manager.story.actions[:-1]
                     story_manager.story.results = story_manager.story.results[:-1]
+                    deleteContent(sys.stdout)
                     console_print("Last action reverted. ")
                     if len(story_manager.story.results) > 0:
+                        deleteContent(sys.stdout)
                         console_print(story_manager.story.results[-1])
                     else:
+                        deleteContent(sys.stdout)
                         console_print(story_manager.story.story_start)
                     continue
 
                 else:
+                    deleteContent(sys.stdout)
+                    deleteContent(sys.stdout)
                     console_print("Unknown command: {}".format(command))
 
             else:
                 if action == "":
                     action = ""
                     result = story_manager.act(action)
+                    deleteContent(sys.stdout)
                     console_print(result)
 
                 elif action[0] == '"':
@@ -350,16 +378,19 @@ def play_aidungeon_2(args):
                     if similarity > 0.9:
                         story_manager.story.actions = story_manager.story.actions[:-1]
                         story_manager.story.results = story_manager.story.results[:-1]
+                        deleteContent(sys.stdout)
                         console_print(
                             "Woops that action caused the model to start looping. Try a different action to prevent that."
                         )
                         continue
 
                 if player_won(result):
+                    deleteContent(sys.stdout)
                     console_print(result + "\n CONGRATS YOU WIN")
                     story_manager.story.get_rating()
                     break
                 elif player_died(result):
+                    deleteContent(sys.stdout)
                     console_print(result)
                     console_print("YOU DIED. GAME OVER")
                     console_print("\nOptions:")
@@ -373,10 +404,12 @@ def play_aidungeon_2(args):
                         story_manager.story.get_rating()
                         break
                     else:
+                        deleteContent(sys.stdout)
                         console_print("Sorry about that...where were we?")
                         console_print(result)
 
                 else:
+                    deleteContent(sys.stdout)
                     console_print(result)
 
 
