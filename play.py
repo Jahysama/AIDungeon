@@ -10,7 +10,7 @@ from story import grammars
 from story.story_manager import *
 from story.utils import *
 
-sys.stdout = open("/content/gdrive/MyDrive/Data/ailog.gdoc", "w")
+sys.stdout = open("/content/AIDungeon/ailog.txt", "w")
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
