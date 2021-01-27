@@ -10,6 +10,8 @@ from story import grammars
 from story.story_manager import *
 from story.utils import *
 
+sys.stdout = open("/content/gdrive/MyDrive/Data/ailog.gdoc", "w")
+
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 parser = argparse.ArgumentParser("Play AIDungeon 2")
@@ -381,3 +383,5 @@ def play_aidungeon_2(args):
 if __name__ == "__main__":
     args = parser.parse_args()
     play_aidungeon_2(args)
+    
+sys.stdout.close()
